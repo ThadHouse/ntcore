@@ -33,7 +33,7 @@ RpcServer::RpcServer() {
 }
 
 RpcServer::~RpcServer() {
-  Logger::GetInstance().SetLogger(nullptr);
+  Logger::GetInstance().SetDefaultLogger();
   m_terminating = true;
   m_poll_cond.notify_all();
 }

@@ -24,6 +24,8 @@ class Logger {
     return instance;
   }
   ~Logger();
+  
+  void SetDefaultLogger();
 
   typedef std::function<void(unsigned int level, const char* file,
                              unsigned int line, const char* msg)> LogFunc;
