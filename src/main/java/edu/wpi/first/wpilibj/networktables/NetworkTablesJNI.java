@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import edu.wpi.first.wpiutil.RuntimeDetector;
 
 public class NetworkTablesJNI {
   static boolean libraryLoaded = false;
@@ -18,19 +19,7 @@ public class NetworkTablesJNI {
         System.loadLibrary("ntcore");
       } catch (UnsatisfiedLinkError e) {
         try {
-          String osname = System.getProperty("os.name");
-          String resname;
-          if (osname.startsWith("Windows"))
-            resname = "/Windows/" + System.getProperty("os.arch") + "/";
-          else
-            resname = "/" + osname + "/" + System.getProperty("os.arch") + "/";
-          System.out.println("platform: " + resname);
-          if (osname.startsWith("Windows"))
-            resname += "ntcore.dll";
-          else if (osname.startsWith("Mac"))
-            resname += "libntcore.dylib";
-          else
-            resname += "libntcore.so";
+          String resname = RuntimeDetector.getLibraryResource("ntcore");
           InputStream is = NetworkTablesJNI.class.getResourceAsStream(resname);
           if (is != null) {
             // create temporary file
