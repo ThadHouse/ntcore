@@ -1,5 +1,3 @@
-language: java
-
 matrix:
   include:
     - os: linux
@@ -14,14 +12,8 @@ addons:
       - g++-multilib
       - lib32stdc++6
 
-before_install:
-  - .travis-scripts/install.sh
-
-install:
-  - ./gradlew build -PbuildAll
-
 script:
-  - ./gradlew build -PbuildAll
+  - ./gradlew compileCpp jar -PbuildAll --console=plain --no-daemon
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
