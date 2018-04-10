@@ -2,18 +2,10 @@ import edu.wpi.first.nativeutils.NativeUtils
 import org.gradle.api.file.FileCollection
 import org.gradle.internal.os.OperatingSystem
 import edu.wpi.first.nativeutils.tasks.JNIHeaders
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'gradle.plugin.edu.wpi.first:native-utils:1.5.1'
-        classpath 'gradle.plugin.edu.wpi.first.wpilib.versioning:wpilib-version-plugin:2.0'
-    }
+plugins {
+    id 'edu.wpi.first.GradleJni' version '0.0.2'
+    id 'edu.wpi.first.wpilib.versioning.WPILibVersioningPlugin' version '2.0'
+    id 'edu.wpi.first.NativeUtils' version '1.5.6'
 }
 
 repositories {
@@ -88,18 +80,6 @@ dependencies {
 
 
 model {
-    jniConfigs {
-        ntcore(JNIConfig) {
-            jniDefinitionClasses = [ "edu.wpi.first.networktables.NetworkTablesJNI" ]
-            jniArmHeaderLocations = [ all: file("${rootDir}/src/arm-linux-jni") ]
-            sourceSets = [ project.sourceSets.main ]
-        }
-        ntcoreJNI(JNIConfig) {
-            jniDefinitionClasses = [ "edu.wpi.first.networktables.NetworkTablesJNI" ]
-            jniArmHeaderLocations = [ all: file("${rootDir}/src/arm-linux-jni") ]
-            sourceSets = [ project.sourceSets.main ]
-        }
-    }
     exportsConfigs {
         ntcore(ExportsConfig) {
             x86ExcludeSymbols = [ '_CT??_R0?AV_System_error', '_CT??_R0?AVexception', '_CT??_R0?AVfailure',
@@ -146,7 +126,10 @@ model {
         }
     }
     components {
-        ntcore(NativeLibrarySpec) {
+        ntcore(JniNativeLibrarySpec) {
+            enableCheckTask true
+            javaCompileTasks << compileJava
+            jniCrossCompileOptions << JniCrossCompileOptions('linux', 'athena', ["${rootDir}/src/arm-linux-jni".toString(), "${rootDir}/src/arm-linux-jni/linux".toString()])
             sources {
                 cpp {
                     source {
@@ -159,7 +142,10 @@ model {
                 }
             }
         }
-        ntcoreJNI(NativeLibrarySpec) {
+        ntcoreJNI(JniNativeLibrarySpec) {
+            enableCheckTask true
+            javaCompileTasks << compileJava
+            jniCrossCompileOptions << JniCrossCompileOptions('linux', 'athena', ["${rootDir}/src/arm-linux-jni".toString(), "${rootDir}/src/arm-linux-jni/linux".toString()])
             baseName = 'ntcore'
             sources {
                 cpp {
@@ -246,5 +232,5 @@ model {
 apply from: 'publish.gradle'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
+    gradleVersion = '4.6'
 }
